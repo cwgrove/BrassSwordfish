@@ -15,13 +15,21 @@ class CreatePostsTable extends Migration
     {
       Schema::create('posts', function (Blueprint $table) {
           $table->increments('id');
+          $table->integer('user_id')->unsigned();
+
           $table->string('fmedia')->nullable();
           $table->string('posttitle')->nullable();
           $table->string('postcontent')->nullable();
           $table->string('posttype')->nullable();
           $table->string('poststatus');
-          // this needt=s to be an in and relate to a user.
-          $table->string('postauthor')->nullable();
+
+
+         $table->foreign('user_id')
+         ->references('id')
+         ->on('users');
+
+
+
           $table->timestamps();
       });
     }

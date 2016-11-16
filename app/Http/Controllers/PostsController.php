@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
+
 use Illuminate\Http\Request;
 
 //calling in the Post Model Class.
 use App\Post;
+use App\User;
 
 
 
@@ -67,7 +70,7 @@ return view('public.single',compact('a'));
 // Returns admin pages
 public function admin()
 {
-return view('admin.index');
+  return view('admin.index');
 }
 
 public function create()
@@ -78,6 +81,8 @@ return view('admin.add');
 //Stores post values
 public function store()
 {
+$id = Auth::user()->id;
+
 //Capturing post from form
 $a = request()->all();
 //capturing request object again.
@@ -109,7 +114,7 @@ if (!empty($file)) {
   $b->fmedia = "/resources/".$fname;
 }
   	$b->posttype = $postType;
-    $b->postauthor = 'admin';
+    $b->user_id = $id;
     $b->poststatus = 'published';
 
     $request = request();
@@ -134,14 +139,24 @@ return redirect('/share/edit/'.$i);
 
 public function edit($id)
 {
-  $a = Post::find($id);
+  $user_id = Auth::user()->id;
+  $currentuser = User::find($user_id);
+
+
+
+
+  $a = $currentuser->posts->where('id','=',$id)->first();
+//  return $a;
+//  $a = Post::find($id);
   return view('admin.edit',compact('a'));
 
 }
 //basically the same as store
 public function update($id)
 {
-  $b = Post::find($id);
+
+  $user_id = Auth::user()->id;
+  $b = Post::find($user_id);
 
   $c = request()->all();
 
@@ -167,17 +182,24 @@ public function update($id)
     $b->fmedia = "/resources/".$fname;
   }
 
-      $b->postauthor = 'admin';
+      $b->user_id = $user_id;
       $b->poststatus = 'published';
   		$b->save();
   		return back();
 }
 
 
-// needs to only show users posts. 
+// needs to only show users posts.
 public function allposts()
 {
-   $a = Post::all();
+  $id = Auth::user()->id;
+  $currentuser = User::find($id);
+//  return $currentuser;
+
+$a = $currentuser->posts;
+
+//return $a;
+  // $a = User::posts();
 
   return view('admin.list', compact('a'));
 }

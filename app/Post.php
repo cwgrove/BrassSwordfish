@@ -9,6 +9,9 @@ class Post extends Model
     //
     protected $fillable = ['fmedia','posttitle','postcontent','posttype'];
 
-
+    public function author()
+   {
+       return $this->belongsTo('App\User');
+   }
 
 }

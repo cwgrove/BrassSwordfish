@@ -15,6 +15,11 @@
   //  return view('welcome');
 //});
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');
+
 //Displays all posts
 Route::get('/', 'PostsController@index');
 
@@ -25,26 +30,26 @@ Route::get('/video', 'PostsController@video');
 Route::get('/post', 'PostsController@post');
 
 //Takes user to admin pannel
-Route::get('/share', 'PostsController@admin');
+Route::get('/share', 'PostsController@admin')->middleware('auth');
 
 //Shows individual post
 Route::get('/{id}', 'PostsController@show');
 
 //Add post form
-Route::get('/share/add', 'PostsController@create');
+Route::get('/share/add', 'PostsController@create')->middleware('auth');
 
 //Store post
-Route::post('/share/add', 'PostsController@store');
+Route::post('/share/add', 'PostsController@store')->middleware('auth');
 
 //Shows edit post form`
-Route::get('/share/edit/{id}', 'PostsController@edit');
+Route::get('/share/edit/{id}', 'PostsController@edit')->middleware('auth');
 
 // Updates post form
-Route::post('/share/edit/{id}', 'PostsController@update');
+Route::post('/share/edit/{id}', 'PostsController@update')->middleware('auth');
 
 //***will Displays all posts owned by user
 Route::get('/share/posts', 'PostsController@allposts');
 
 //Will archive post
 
-Route::get('/share/edit/{id}/delete', 'PostsController@archive');
+Route::get('/share/edit/{id}/delete', 'PostsController@archive')->middleware('auth');
