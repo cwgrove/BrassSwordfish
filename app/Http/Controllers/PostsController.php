@@ -1,14 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Auth;
-
+use App\Http\Controllers\EmailController;
 use Illuminate\Http\Request;
 
 //calling in the Post Model Class.
 use App\Post;
-use App\User;
 
 
 
@@ -70,7 +67,7 @@ return view('public.single',compact('a'));
 // Returns admin pages
 public function admin()
 {
-  return view('admin.index');
+return view('admin.index');
 }
 
 public function create()
@@ -81,8 +78,6 @@ return view('admin.add');
 //Stores post values
 public function store()
 {
-$id = Auth::user()->id;
-
 //Capturing post from form
 $a = request()->all();
 //capturing request object again.
@@ -114,7 +109,7 @@ if (!empty($file)) {
   $b->fmedia = "/resources/".$fname;
 }
   	$b->posttype = $postType;
-    $b->user_id = $id;
+    $b->postauthor = 'admin';
     $b->poststatus = 'published';
 
     $request = request();
@@ -125,7 +120,7 @@ if (!empty($file)) {
 //saving new object
 		$b->save();
 
-
+EmailController::send($b);
     //returns to edit the post that was just created
 
     //CODE NEEDS TO BE REFACTORED
@@ -139,24 +134,14 @@ return redirect('/share/edit/'.$i);
 
 public function edit($id)
 {
-  $user_id = Auth::user()->id;
-  $currentuser = User::find($user_id);
-
-
-
-
-  $a = $currentuser->posts->where('id','=',$id)->first();
-//  return $a;
-//  $a = Post::find($id);
+  $a = Post::find($id);
   return view('admin.edit',compact('a'));
 
 }
 //basically the same as store
 public function update($id)
 {
-
-  $user_id = Auth::user()->id;
-  $b = Post::find($user_id);
+  $b = Post::find($id);
 
   $c = request()->all();
 
@@ -182,24 +167,17 @@ public function update($id)
     $b->fmedia = "/resources/".$fname;
   }
 
-      $b->user_id = $user_id;
+      $b->postauthor = 'admin';
       $b->poststatus = 'published';
   		$b->save();
   		return back();
 }
 
 
-// needs to only show users posts.
+// needs to only show users posts. 
 public function allposts()
 {
-  $id = Auth::user()->id;
-  $currentuser = User::find($id);
-//  return $currentuser;
-
-$a = $currentuser->posts;
-
-//return $a;
-  // $a = User::posts();
+   $a = Post::all();
 
   return view('admin.list', compact('a'));
 }
